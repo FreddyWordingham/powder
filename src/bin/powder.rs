@@ -2,6 +2,7 @@
 
 use arctk::{
     args,
+    file::Load,
     util::{
         banner::{section, title},
         dir,
@@ -27,9 +28,13 @@ fn main() {
         params_path: PathBuf
     );
     let cwd = current_dir().expect("Failed to determine current working directory.");
-    let (in_dir, out_dir) = dir::io_dirs(Some(cwd.join("input")), Some(cwd.join("output")))
+    let (in_dir, _out_dir) = dir::io_dirs(Some(cwd.join("input")), Some(cwd.join("output")))
         // let (in_dir, out_dir) = dir::io_dirs(Some(cwd.clone()), Some(cwd.join("output")))
         .expect("Failed to initialise directories.");
+
+    section(term_width, "Input");
+    let _params =
+        Parameters::load(&in_dir.join(params_path)).expect("Failed to load parameters file.");
 
     // Initialisation.
     let w = 128;
