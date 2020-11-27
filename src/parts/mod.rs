@@ -1,5 +1,5 @@
 //! Game parts.
 
-// pub mod spec;
+pub mod spec;
 
-// pub use self::spec::*;
+pub use self::spec::*;
