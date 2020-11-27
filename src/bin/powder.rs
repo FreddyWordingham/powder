@@ -11,6 +11,7 @@ use arctk::{
 };
 use arctk_attr::input;
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
+use powder::parts::World;
 use std::{env::current_dir, path::PathBuf};
 
 /// Input parameters.
@@ -45,11 +46,16 @@ fn main() {
     let buffer: Vec<u32> = vec![0; w * h];
     let mut win = make_window(w, h);
 
+    let mut world = World::new(params.res);
+
     // Limit to max ~60 fps update rate
     // win.limit_update_rate(Some(std::time::Duration::from_micros(10000)));
 
     // Main loop.
     while win.is_open() && !win.is_key_down(Key::Escape) {
+        world.tick();
+        world.draw(&mut buffer);
+
         win.update_with_buffer(&buffer, w, h)
             .expect("Failed to render.")
     }
