@@ -43,9 +43,8 @@ fn main() {
     let h = params.res[Y];
 
     // Resources.
-    let buffer: Vec<u32> = vec![0; w * h];
+    let mut buffer: Vec<u32> = vec![0; w * h];
     let mut win = make_window(w, h);
-
     let mut world = World::new(params.res);
 
     // Limit to max ~60 fps update rate

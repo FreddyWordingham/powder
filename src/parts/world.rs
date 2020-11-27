@@ -23,9 +23,16 @@ impl World {
         debug_assert!(res[X] > 0);
         debug_assert!(res[Y] > 0);
 
+        let mut cells = Array2::default(res);
+        for xi in 54..74 {
+            for yi in 54..74 {
+                cells[[xi, yi]] = Spec::Sand;
+            }
+        }
+
         Self {
             res,
-            cells: Array2::default(res),
+            cells,
             buffer: Array2::default(res),
         }
     }
@@ -49,6 +56,19 @@ impl World {
         }
 
         mem::swap(&mut self.cells, &mut self.buffer);
+    }
+
+    /// Draw the world state to a buffer.
+    #[inline]
+    pub fn draw(&self, buffer: &mut Vec<u32>) {
+        for (p, s) in buffer.iter_mut().zip(&self.cells) {
+            match s {
+                Spec::Sand => {
+                    *p = components_to_u32(100, 0, 0);
+                }
+                _ => {}
+            }
+        }
     }
 }
 
