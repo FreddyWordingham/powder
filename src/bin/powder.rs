@@ -1,9 +1,35 @@
 //! Powder game binary.
 
+use arctk::{
+    args,
+    util::{
+        banner::{section, title},
+        dir,
+    },
+};
+use arctk_attr::input;
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
+use std::{env::current_dir, path::PathBuf};
+
+/// Input parameters.
+#[input]
+struct Parameters {
+    /// Simulation resolution.
+    res: [usize; 2],
+}
 
 fn main() {
-    println!("Hello Powder!");
+    let term_width = arctk::util::term::width().unwrap_or(80);
+    title(term_width, "Powder");
+
+    section(term_width, "Initialisation");
+    args!(bin_path: PathBuf;
+        params_path: PathBuf
+    );
+    let cwd = current_dir().expect("Failed to determine current working directory.");
+    let (in_dir, out_dir) = dir::io_dirs(Some(cwd.join("input")), Some(cwd.join("output")))
+        // let (in_dir, out_dir) = dir::io_dirs(Some(cwd.clone()), Some(cwd.join("output")))
+        .expect("Failed to initialise directories.");
 
     // Initialisation.
     let w = 128;
