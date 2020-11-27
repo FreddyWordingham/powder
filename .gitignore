@@ -1,2 +1,7 @@
-/target
+/target/
+/input/output/
+/output/
+/.vscode/
+**/*.rs.bk
+.DS_Store
 Cargo.lock
