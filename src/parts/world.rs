@@ -3,11 +3,16 @@
 use crate::parts::Spec;
 use arctk::ord::{X, Y};
 use ndarray::Array2;
+use std::mem;
 
 /// Simulation data.
 pub struct World {
+    /// Resolution.
+    res: [usize; 2],
     /// Cell data.
     cells: Array2<Spec>,
+    /// Buffer data.
+    buffer: Array2<Spec>,
 }
 
 impl World {
@@ -19,7 +24,30 @@ impl World {
         debug_assert!(res[Y] > 0);
 
         Self {
+            res,
             cells: Array2::default(res),
+            buffer: Array2::default(res),
         }
+    }
+
+    /// Tick forward one instance.
+    #[inline]
+    pub fn tick(&mut self) {
+        for yi in 0..self.res[Y] {
+            if yi > 0 {
+                for xi in 0..self.res[X] {
+                    match self.cells[[xi, yi]] {
+                        Spec::Empty => {}
+                        Spec::Sand => {
+                            if self.buffer[[xi, yi - 1]] == Spec::Empty {
+                                self.buffer[[xi, yi - 1]] = Spec::Sand;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        mem::swap(&mut self.cells, &mut self.buffer);
     }
 }
