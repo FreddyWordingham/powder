@@ -3,6 +3,7 @@
 use arctk::{
     args,
     file::Load,
+    ord::{X, Y},
     util::{
         banner::{section, title},
         dir,
@@ -33,12 +34,12 @@ fn main() {
         .expect("Failed to initialise directories.");
 
     section(term_width, "Input");
-    let _params =
+    let params =
         Parameters::load(&in_dir.join(params_path)).expect("Failed to load parameters file.");
 
     // Initialisation.
-    let w = 128;
-    let h = 128;
+    let w = params.res[X];
+    let h = params.res[Y];
 
     // Resources.
     let buffer: Vec<u32> = vec![0; w * h];
