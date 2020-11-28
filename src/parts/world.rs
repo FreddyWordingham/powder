@@ -58,7 +58,7 @@ impl World {
                     Spec::Wall => {}
                     Spec::Empty => {}
                     Spec::Sand => {
-                        self.sand_reaction(x, y);
+                        self.sand_reaction(&mut rng, x, y);
                     }
                     Spec::Water => {
                         self.water_reaction(&mut rng, x, y);
@@ -70,11 +70,11 @@ impl World {
 
     /// Attempt to react a sand spec.
     #[inline]
-    fn sand_reaction(&mut self, x: i32, y: i32) {
+    fn sand_reaction(&mut self, rng: &mut ThreadRng, x: i32, y: i32) {
         let cells = &mut self.cells;
 
         let index = [x as usize, y as usize];
-        for [dx, dy] in &POWDER {
+        for [dx, dy] in &POWDER[rng.gen_range(0, 2)] {
             let other_index = [(x + dx) as usize, (y + dy) as usize];
             let mut other = cells[other_index];
 
