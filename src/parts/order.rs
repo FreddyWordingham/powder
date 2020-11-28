@@ -1,11 +1,17 @@
 //! Reaction order.
 
-/// Create a 32 bit colour representation from 8 bit components.
-#[inline]
-#[must_use]
-pub const fn components_to_u32(r: u8, g: u8, b: u8) -> u32 {
-    ((r as u32) << 16) | ((g as u32) << 8) | (b as u32)
-}
+use crate::parts::direction::{DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT};
 
-/// Down only.
-pub const SOLID: [[i32; 2]; 1] = [[0, -1]];
+/// Solid object.
+pub const SOLID: [[i32; 2]; 1] = [DOWN];
+
+/// Powder object.
+pub const POWDER: [[i32; 2]; 3] = [DOWN, DOWN_LEFT, DOWN_RIGHT];
+
+/// Liquid object.
+pub const LIQUID: [[i32; 2]; 5] = [DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT];
+
+/// Gas object.
+pub const GAS: [[i32; 2]; 8] = [
+    DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT,
+];
