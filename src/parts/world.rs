@@ -58,13 +58,16 @@ impl World {
     #[inline]
     pub fn tick(&mut self, mut rng: &mut ThreadRng) {
         self.cells[[50, 70]] = Spec::Sand;
-        self.cells[[150, 70]] = Spec::Water;
+        self.cells[[100, 70]] = Spec::Water;
+        self.cells[[150, 70]] = Spec::Oil;
+        self.cells[[200, 70]] = Spec::Fire(4);
 
         let mut order = self.order.clone();
         order.shuffle(&mut rng);
         for [x, y] in order {
             let index = [x as usize, y as usize];
 
+            self.cells[index].tick();
             match self.cells[index] {
                 Spec::Wall => {}
                 Spec::Empty => {}
@@ -73,6 +76,12 @@ impl World {
                 }
                 Spec::Water => {
                     self.water_reaction(&mut rng, x, y);
+                }
+                Spec::Oil => {
+                    self.oil_reaction(&mut rng, x, y);
+                }
+                Spec::Fire(..) => {
+                    self.fire_reaction(&mut rng, x, y);
                 }
             }
         }
@@ -114,6 +123,42 @@ impl World {
         }
     }
 
+    /// Attempt to react an oil spec.
+    #[inline]
+    fn oil_reaction(&mut self, rng: &mut ThreadRng, x: i32, y: i32) {
+        let cells = &mut self.cells;
+
+        let index = [x as usize, y as usize];
+        for [dx, dy] in &LIQUID[rng.gen_range(0, 2)] {
+            let other_index = [(x + dx) as usize, (y + dy) as usize];
+            let mut other = cells[other_index];
+
+            if let Some(product) = other.react(cells[index]) {
+                cells[index] = product;
+                cells[other_index] = other;
+                return;
+            }
+        }
+    }
+
+    /// Attempt to react a fire spec.
+    #[inline]
+    fn fire_reaction(&mut self, rng: &mut ThreadRng, x: i32, y: i32) {
+        let cells = &mut self.cells;
+
+        let index = [x as usize, y as usize];
+        for [dx, dy] in &GAS[rng.gen_range(0, 8)] {
+            let other_index = [(x + dx) as usize, (y + dy) as usize];
+            let mut other = cells[other_index];
+
+            if let Some(product) = other.react(cells[index]) {
+                cells[index] = product;
+                cells[other_index] = other;
+                return;
+            }
+        }
+    }
+
     /// Draw the world state to a buffer.
     #[inline]
     pub fn draw(&self, buffer: &mut Vec<u32>) {
@@ -128,6 +173,8 @@ impl World {
                     Spec::Empty => EMPTY,
                     Spec::Sand => SAND,
                     Spec::Water => WATER,
+                    Spec::Oil => OIL,
+                    Spec::Fire(..) => FIRE,
                 }
             }
         }

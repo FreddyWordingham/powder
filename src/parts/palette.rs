@@ -18,3 +18,9 @@ pub const SAND: u32 = components_to_u32(255, 204, 0);
 
 /// Water colour.
 pub const WATER: u32 = components_to_u32(100, 204, 255);
+
+/// Oil colour.
+pub const OIL: u32 = components_to_u32(150, 75, 0);
+
+/// Fire colour.
+pub const FIRE: u32 = components_to_u32(255, 75, 25);

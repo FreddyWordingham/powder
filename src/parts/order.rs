@@ -16,6 +16,29 @@ pub const LIQUID: [[[i32; 2]; 5]; 2] = [
 ];
 
 /// Gas object.
-pub const GAS: [[i32; 2]; 8] = [
-    DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT,
+pub const GAS: [[[i32; 2]; 8]; 8] = [
+    [
+        DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT,
+    ],
+    [
+        DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT, DOWN,
+    ],
+    [
+        DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT, DOWN, DOWN_LEFT,
+    ],
+    [
+        LEFT, RIGHT, UP, UP_LEFT, UP_RIGHT, DOWN, DOWN_LEFT, DOWN_RIGHT,
+    ],
+    [
+        RIGHT, UP, UP_LEFT, UP_RIGHT, DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT,
+    ],
+    [
+        UP, UP_LEFT, UP_RIGHT, DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT,
+    ],
+    [
+        UP_LEFT, UP_RIGHT, DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP,
+    ],
+    [
+        UP_RIGHT, DOWN, DOWN_LEFT, DOWN_RIGHT, LEFT, RIGHT, UP, UP_LEFT,
+    ],
 ];
