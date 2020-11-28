@@ -61,12 +61,20 @@ impl World {
     /// Draw the world state to a buffer.
     #[inline]
     pub fn draw(&self, buffer: &mut Vec<u32>) {
-        for (p, s) in buffer.iter_mut().zip(&self.cells) {
-            match s {
-                Spec::Sand => {
-                    *p = components_to_u32(100, 0, 0);
+        let length = buffer.len();
+
+        let sand = components_to_u32(100, 0, 0);
+
+        for yi in 0..self.res[Y] {
+            let height = length - (yi * self.res[X]);
+            for xi in 0..self.res[X] {
+                let index = xi + height;
+                match self.cells[[xi, yi]] {
+                    Spec::Empty => {}
+                    Spec::Sand => {
+                        buffer[index] = sand;
+                    }
                 }
-                _ => {}
             }
         }
     }
