@@ -1,6 +1,6 @@
 //! Simulation data.
 
-use crate::parts::Spec;
+use crate::parts::{palette::*, Spec};
 use arctk::ord::{X, Y};
 use ndarray::Array2;
 use std::mem;
@@ -63,26 +63,20 @@ impl World {
     pub fn draw(&self, buffer: &mut Vec<u32>) {
         let length = buffer.len();
 
+        // Colours.
         let sand = components_to_u32(100, 0, 0);
 
         for yi in 0..self.res[Y] {
-            let height = length - (yi * self.res[X]);
+            let offset = yi * self.res[X];
             for xi in 0..self.res[X] {
-                let index = xi + height;
+                let index = offset + xi;
                 match self.cells[[xi, yi]] {
                     Spec::Empty => {}
                     Spec::Sand => {
-                        buffer[index] = sand;
+                        buffer[length - index] = SAND;
                     }
                 }
             }
         }
     }
-}
-
-/// Create a 32 bit colour representation from 8 bit components.
-#[inline]
-#[must_use]
-pub const fn components_to_u32(r: u8, g: u8, b: u8) -> u32 {
-    ((r as u32) << 16) | ((g as u32) << 8) | (b as u32)
 }
