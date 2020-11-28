@@ -47,7 +47,11 @@ impl World {
                         Spec::Empty => {}
                         Spec::Sand => {
                             if self.buffer[[xi, yi - 1]] == Spec::Empty {
+                                self.cells[[xi, yi]] = Spec::Empty;
                                 self.buffer[[xi, yi - 1]] = Spec::Sand;
+                            } else {
+                                self.cells[[xi, yi]] = Spec::Empty;
+                                self.buffer[[xi, yi]] = Spec::Sand;
                             }
                         }
                     }
@@ -67,11 +71,9 @@ impl World {
             let offset = yi * self.res[X];
             for xi in 0..self.res[X] {
                 let index = offset + self.res[X] - xi;
-                match self.cells[[xi, yi]] {
-                    Spec::Empty => {}
-                    Spec::Sand => {
-                        buffer[length - index] = SAND;
-                    }
+                buffer[length - index] = match self.cells[[xi, yi]] {
+                    Spec::Empty => EMPTY,
+                    Spec::Sand => SAND,
                 }
             }
         }
