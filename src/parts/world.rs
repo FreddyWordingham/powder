@@ -3,7 +3,7 @@
 use crate::parts::{order::*, palette::*, Spec};
 use arctk::ord::{X, Y};
 use ndarray::Array2;
-use rand::rngs::ThreadRng;
+use rand::{rngs::ThreadRng, Rng};
 
 /// Simulation data.
 pub struct World {
@@ -44,8 +44,9 @@ impl World {
 
     /// Tick forward one instance.
     #[inline]
-    pub fn tick(&mut self, _rng: &mut ThreadRng) {
+    pub fn tick(&mut self, mut rng: &mut ThreadRng) {
         self.cells[[50, 70]] = Spec::Sand;
+        self.cells[[150, 70]] = Spec::Water;
 
         for yi in 0..self.res[Y] {
             let y = yi as i32;
@@ -59,7 +60,9 @@ impl World {
                     Spec::Sand => {
                         self.sand_reaction(x, y);
                     }
-                    Spec::Water => {}
+                    Spec::Water => {
+                        self.water_reaction(&mut rng, x, y);
+                    }
                 }
             }
         }
@@ -72,6 +75,24 @@ impl World {
 
         let index = [x as usize, y as usize];
         for [dx, dy] in &POWDER {
+            let other_index = [(x + dx) as usize, (y + dy) as usize];
+            let mut other = cells[other_index];
+
+            if let Some(product) = other.react(cells[index]) {
+                cells[index] = product;
+                cells[other_index] = other;
+                return;
+            }
+        }
+    }
+
+    /// Attempt to react a water spec.
+    #[inline]
+    fn water_reaction(&mut self, rng: &mut ThreadRng, x: i32, y: i32) {
+        let cells = &mut self.cells;
+
+        let index = [x as usize, y as usize];
+        for [dx, dy] in &LIQUID[rng.gen_range(0, 2)] {
             let other_index = [(x + dx) as usize, (y + dy) as usize];
             let mut other = cells[other_index];
 
