@@ -1,7 +1,5 @@
 //! Enumeration of known species.
 
-use std::ops::{Add, AddAssign};
-
 /// Species kinds
 #[derive(PartialEq, Copy, Clone)]
 pub enum Spec {
@@ -15,6 +13,32 @@ pub enum Spec {
     Water,
 }
 
+impl Spec {
+    /// Attempt a reaction between this spec and an incoming spec.
+    /// Return None if no reaction will occur.
+    /// Return Some<Self> if the reaction proceeds.
+    /// The wrapped returned value is a product of the reaction.
+    #[inline]
+    #[must_use]
+    pub fn react(&mut self, rhs: Self) -> Option<Self> {
+        match self {
+            Self::Wall => {
+                return None;
+            }
+            Self::Empty => {
+                *self = rhs;
+                return Some(Self::Empty);
+            }
+            Self::Sand => {
+                return None;
+            }
+            Self::Water => {
+                return None;
+            }
+        }
+    }
+}
+
 impl Default for Spec {
     #[inline]
     #[must_use]
@@ -22,36 +46,3 @@ impl Default for Spec {
         Self::Empty
     }
 }
-
-// impl Add for Spec {
-//     type Output = Self;
-
-//     #[inline]
-//     #[must_use]
-//     fn add(self, rhs: Self) -> Self::Output {
-//         match self {
-//             Self::Empty => {
-//                 rhs
-//             },
-//             Self::Sand => {
-
-//             }
-//         }
-//     }
-// }
-
-// impl AddAssign for Spec {
-//     #[inline]
-//     #[must_use]
-//     fn add_assign(&mut self, rhs: Self) {
-//         // if rhs == Self::Empty {
-//         //     self
-//         // } else {
-//         //     rhs
-//         // }
-
-//         match self {
-
-//         }
-//     }
-// }
