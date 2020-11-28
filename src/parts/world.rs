@@ -1,10 +1,9 @@
 //! Simulation data.
 
-use crate::parts::{palette::*, Spec, Stencil};
+use crate::parts::{order::*, palette::*, Spec};
 use arctk::ord::{X, Y};
 use ndarray::Array2;
 use rand::rngs::ThreadRng;
-use std::mem;
 
 /// Simulation data.
 pub struct World {
@@ -12,10 +11,6 @@ pub struct World {
     res: [usize; 2],
     /// Cell data.
     cells: Array2<Spec>,
-    /// Buffer data.
-    buffer: Array2<Spec>,
-    /// Sources.
-    sources: Array2<Spec>,
 }
 
 impl World {
@@ -36,85 +31,56 @@ impl World {
             cells[[res[X] - 1, yi]] = Spec::Wall;
         }
 
-        Self {
-            res,
-            cells,
-            buffer: Array2::default(res),
-            sources: Array2::default(res),
-        }
-    }
+        cells[[47, 50]] = Spec::Wall;
+        cells[[48, 50]] = Spec::Wall;
+        cells[[49, 50]] = Spec::Wall;
+        cells[[50, 50]] = Spec::Wall;
+        cells[[51, 50]] = Spec::Wall;
+        cells[[52, 50]] = Spec::Wall;
+        cells[[53, 50]] = Spec::Wall;
 
-    /// Create a species source.
-    #[inline]
-    pub fn set_source(&mut self, spec: Spec, index: [usize; 2]) {
-        debug_assert!(index[X] < self.res[X]);
-        debug_assert!(index[Y] < self.res[Y]);
-
-        self.sources[index] = spec;
+        Self { res, cells }
     }
 
     /// Tick forward one instance.
     #[inline]
-    pub fn tick(&mut self, rng: &mut ThreadRng) {
-        let curr = &mut self.cells;
-        let next = &mut self.buffer;
-
-        // next[[50, 100]] = Spec::Sand;
-        // next[[101, 100]] = Spec::Water;
-
-        // next += self.sources;
+    pub fn tick(&mut self, _rng: &mut ThreadRng) {
+        self.cells[[50, 70]] = Spec::Sand;
 
         for yi in 0..self.res[Y] {
+            let y = yi as i32;
             for xi in 0..self.res[X] {
-                let index = Stencil::new([xi, yi]);
+                let x = xi as i32;
+                let index = [xi, yi];
 
-                match curr[index.index()] {
-                    Spec::Wall => {
-                        curr[index.index()] = Spec::Empty;
-                        next[index.index()] = Spec::Wall;
-                    }
+                match self.cells[index] {
+                    Spec::Wall => {}
+                    Spec::Empty => {}
                     Spec::Sand => {
-                        if next[index.under()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            next[index.under()] = Spec::Sand;
-                        } else if next[index.under_left()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            curr[index.under_left()] = Spec::Sand;
-                        } else if next[index.under_right()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            curr[index.under_right()] = Spec::Sand;
-                        } else {
-                            curr[index.index()] = Spec::Empty;
-                            next[index.index()] = Spec::Sand;
-                        }
+                        self.sand_reaction(x, y);
                     }
-                    Spec::Water => {
-                        if next[index.under()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            next[index.under()] = Spec::Water;
-                        } else if next[index.under_left()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            curr[index.under_left()] = Spec::Water;
-                        } else if next[index.under_right()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            curr[index.under_right()] = Spec::Water;
-                        } else if next[index.left()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            next[index.left()] = Spec::Water;
-                        } else if next[index.right()] == Spec::Empty {
-                            curr[index.index()] = Spec::Empty;
-                            next[index.right()] = Spec::Water;
-                        } else {
-                            curr[index.index()] = Spec::Empty;
-                            next[index.index()] = Spec::Sand;
-                        }
-                    }
-                    _ => {}
+                    Spec::Water => {}
                 }
             }
         }
+    }
 
-        mem::swap(curr, next);
+    /// Attempt to react a sand spec.
+    #[inline]
+    fn sand_reaction(&mut self, x: i32, y: i32) {
+        let cells = &mut self.cells;
+
+        let index = [x as usize, y as usize];
+        for [dx, dy] in &POWDER {
+            let other_index = [(x + dx) as usize, (y + dy) as usize];
+            let mut other = cells[other_index];
+
+            if let Some(product) = other.react(cells[index]) {
+                cells[index] = product;
+                cells[other_index] = other;
+                return;
+            }
+        }
     }
 
     /// Draw the world state to a buffer.

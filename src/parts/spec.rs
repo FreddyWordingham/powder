@@ -22,19 +22,13 @@ impl Spec {
     #[must_use]
     pub fn react(&mut self, rhs: Self) -> Option<Self> {
         match self {
-            Self::Wall => {
-                return None;
-            }
+            Self::Wall => None,
             Self::Empty => {
                 *self = rhs;
-                return Some(Self::Empty);
+                Some(Self::Empty)
             }
-            Self::Sand => {
-                return None;
-            }
-            Self::Water => {
-                return None;
-            }
+            Self::Sand => None,
+            Self::Water => None,
         }
     }
 }
