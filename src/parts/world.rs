@@ -3,7 +3,7 @@
 use crate::parts::{order::*, palette::*, Spec};
 use arctk::ord::{X, Y};
 use ndarray::Array2;
-use rand::{rngs::ThreadRng, Rng};
+use rand::{prelude::SliceRandom, rngs::ThreadRng, Rng};
 
 /// Simulation data.
 pub struct World {
@@ -11,6 +11,8 @@ pub struct World {
     res: [usize; 2],
     /// Cell data.
     cells: Array2<Spec>,
+    /// Update order.
+    order: Vec<[i32; 2]>,
 }
 
 impl World {
@@ -39,7 +41,17 @@ impl World {
         cells[[52, 50]] = Spec::Wall;
         cells[[53, 50]] = Spec::Wall;
 
-        Self { res, cells }
+        let mut order = Vec::with_capacity(res[X] * res[Y]);
+        for xi in 0..res[X] {
+            let x = xi as i32;
+            for yi in 0..res[Y] {
+                let y = yi as i32;
+
+                order.push([x, y]);
+            }
+        }
+
+        Self { res, cells, order }
     }
 
     /// Tick forward one instance.
@@ -48,21 +60,19 @@ impl World {
         self.cells[[50, 70]] = Spec::Sand;
         self.cells[[150, 70]] = Spec::Water;
 
-        for yi in 0..self.res[Y] {
-            let y = yi as i32;
-            for xi in 0..self.res[X] {
-                let x = xi as i32;
-                let index = [xi, yi];
+        let mut order = self.order.clone();
+        order.shuffle(&mut rng);
+        for [x, y] in order {
+            let index = [x as usize, y as usize];
 
-                match self.cells[index] {
-                    Spec::Wall => {}
-                    Spec::Empty => {}
-                    Spec::Sand => {
-                        self.sand_reaction(&mut rng, x, y);
-                    }
-                    Spec::Water => {
-                        self.water_reaction(&mut rng, x, y);
-                    }
+            match self.cells[index] {
+                Spec::Wall => {}
+                Spec::Empty => {}
+                Spec::Sand => {
+                    self.sand_reaction(&mut rng, x, y);
+                }
+                Spec::Water => {
+                    self.water_reaction(&mut rng, x, y);
                 }
             }
         }
