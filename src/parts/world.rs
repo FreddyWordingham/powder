@@ -24,11 +24,11 @@ impl World {
         debug_assert!(res[Y] > 0);
 
         let mut cells = Array2::default(res);
-        for xi in 54..74 {
-            for yi in 54..74 {
-                cells[[xi, yi]] = Spec::Sand;
-            }
-        }
+        // for xi in 54..74 {
+        //     for yi in 54..74 {
+        //         cells[[xi, yi]] = Spec::Sand;
+        //     }
+        // }
 
         Self {
             res,
@@ -40,6 +40,8 @@ impl World {
     /// Tick forward one instance.
     #[inline]
     pub fn tick(&mut self) {
+        self.cells[[50, 100]] = Spec::Sand;
+
         for yi in 0..self.res[Y] {
             if yi > 0 {
                 for xi in 0..self.res[X] {
@@ -49,6 +51,12 @@ impl World {
                             if self.buffer[[xi, yi - 1]] == Spec::Empty {
                                 self.cells[[xi, yi]] = Spec::Empty;
                                 self.buffer[[xi, yi - 1]] = Spec::Sand;
+                            } else if self.buffer[[xi - 1, yi - 1]] == Spec::Empty {
+                                self.cells[[xi, yi]] = Spec::Empty;
+                                self.buffer[[xi - 1, yi - 1]] = Spec::Sand;
+                            } else if self.buffer[[xi + 1, yi - 1]] == Spec::Empty {
+                                self.cells[[xi, yi]] = Spec::Empty;
+                                self.buffer[[xi + 1, yi - 1]] = Spec::Sand;
                             } else {
                                 self.cells[[xi, yi]] = Spec::Empty;
                                 self.buffer[[xi, yi]] = Spec::Sand;
