@@ -63,13 +63,10 @@ impl World {
     pub fn draw(&self, buffer: &mut Vec<u32>) {
         let length = buffer.len();
 
-        // Colours.
-        let sand = components_to_u32(100, 0, 0);
-
         for yi in 0..self.res[Y] {
             let offset = yi * self.res[X];
             for xi in 0..self.res[X] {
-                let index = offset + xi;
+                let index = offset + self.res[X] - xi;
                 match self.cells[[xi, yi]] {
                     Spec::Empty => {}
                     Spec::Sand => {
