@@ -3,6 +3,8 @@
 /// Species kinds
 #[derive(PartialEq, Copy, Clone)]
 pub enum Spec {
+    /// Wall.
+    Wall,
     /// Empty.
     Empty,
     /// Sand.
