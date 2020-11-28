@@ -57,10 +57,10 @@ impl World {
     /// Tick forward one instance.
     #[inline]
     pub fn tick(&mut self, mut rng: &mut ThreadRng) {
-        self.cells[[50, 70]] = Spec::Sand;
-        self.cells[[100, 70]] = Spec::Water;
-        self.cells[[150, 70]] = Spec::Oil;
-        self.cells[[200, 70]] = Spec::Fire(4);
+        self.cells[[51, 70]] = Spec::Sand;
+        self.cells[[102, 70]] = Spec::Water;
+        self.cells[[153, 70]] = Spec::Oil;
+        self.cells[[204, 25]] = Spec::Fire(10);
 
         let mut order = self.order.clone();
         order.shuffle(&mut rng);

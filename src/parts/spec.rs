@@ -59,6 +59,10 @@ impl Spec {
                     *self = rhs;
                     Some(Self::Oil)
                 }
+                Self::Fire(time) => {
+                    *self = Self::Fire(time);
+                    Some(Self::Fire(14))
+                }
                 _ => None,
             },
             Self::Fire(time) => match rhs {
