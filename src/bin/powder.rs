@@ -52,9 +52,9 @@ fn main() {
 
     // Main loop.
     while win.is_open() && !win.is_key_down(Key::Escape) {
-        for _ in 0..10 {
-            world.tick();
-        }
+        // for _ in 0..10 {
+        world.tick();
+        // }
         world.draw(&mut buffer);
 
         win.update_with_buffer(&buffer, w, h)
