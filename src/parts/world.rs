@@ -3,6 +3,7 @@
 use crate::parts::{palette::*, Spec, Stencil};
 use arctk::ord::{X, Y};
 use ndarray::Array2;
+use rand::rngs::ThreadRng;
 use std::mem;
 
 /// Simulation data.
@@ -13,6 +14,8 @@ pub struct World {
     cells: Array2<Spec>,
     /// Buffer data.
     buffer: Array2<Spec>,
+    /// Sources.
+    sources: Array2<Spec>,
 }
 
 impl World {
@@ -37,17 +40,29 @@ impl World {
             res,
             cells,
             buffer: Array2::default(res),
+            sources: Array2::default(res),
         }
+    }
+
+    /// Create a species source.
+    #[inline]
+    pub fn set_source(&mut self, spec: Spec, index: [usize; 2]) {
+        debug_assert!(index[X] < self.res[X]);
+        debug_assert!(index[Y] < self.res[Y]);
+
+        self.sources[index] = spec;
     }
 
     /// Tick forward one instance.
     #[inline]
-    pub fn tick(&mut self) {
+    pub fn tick(&mut self, rng: &mut ThreadRng) {
         let curr = &mut self.cells;
         let next = &mut self.buffer;
 
-        next[[50, 100]] = Spec::Sand;
-        next[[100, 100]] = Spec::Water;
+        // next[[50, 100]] = Spec::Sand;
+        // next[[101, 100]] = Spec::Water;
+
+        // next += self.sources;
 
         for yi in 0..self.res[Y] {
             for xi in 0..self.res[X] {

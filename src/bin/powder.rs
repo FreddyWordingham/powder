@@ -45,6 +45,7 @@ fn main() {
     // Resources.
     let mut buffer: Vec<u32> = vec![0; w * h];
     let mut win = make_window(w, h);
+    let mut rng = rand::thread_rng();
     let mut world = World::new(params.res);
 
     // Limit to max ~60 fps update rate
@@ -53,7 +54,7 @@ fn main() {
     // Main loop.
     while win.is_open() && !win.is_key_down(Key::Escape) {
         // for _ in 0..1000 {
-        world.tick();
+        world.tick(&mut rng);
         // }
         world.draw(&mut buffer);
 
