@@ -47,9 +47,6 @@ impl World {
 
         for yi in 1..(self.res[Y] - 1) {
             for xi in 1..(self.res[X] - 1) {
-                let top = [xi, yi + 1];
-                let bottom = [xi, yi - 1];
-
                 match self.cells[[xi, yi]] {
                     Spec::Sand => {
                         if self.buffer[[xi, yi - 1]] == Spec::Empty {
