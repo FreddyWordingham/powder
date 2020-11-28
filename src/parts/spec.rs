@@ -9,6 +9,8 @@ pub enum Spec {
     Empty,
     /// Sand.
     Sand,
+    /// Water.
+    Water,
 }
 
 impl Default for Spec {

@@ -41,4 +41,18 @@ impl Stencil {
     pub const fn under_right(&self) -> [usize; 2] {
         [self.index[X] + 1, self.index[Y] - 1]
     }
+
+    /// Get the index to the left.
+    #[inline]
+    #[must_use]
+    pub const fn left(&self) -> [usize; 2] {
+        [self.index[X] - 1, self.index[Y]]
+    }
+
+    /// Get the index to the right.
+    #[inline]
+    #[must_use]
+    pub const fn right(&self) -> [usize; 2] {
+        [self.index[X] + 1, self.index[Y]]
+    }
 }

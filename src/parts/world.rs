@@ -47,6 +47,7 @@ impl World {
         let next = &mut self.buffer;
 
         next[[50, 100]] = Spec::Sand;
+        next[[100, 100]] = Spec::Water;
 
         for yi in 0..self.res[Y] {
             for xi in 0..self.res[X] {
@@ -72,6 +73,27 @@ impl World {
                             next[index.index()] = Spec::Sand;
                         }
                     }
+                    Spec::Water => {
+                        if next[index.under()] == Spec::Empty {
+                            curr[index.index()] = Spec::Empty;
+                            next[index.under()] = Spec::Water;
+                        } else if next[index.under_left()] == Spec::Empty {
+                            curr[index.index()] = Spec::Empty;
+                            curr[index.under_left()] = Spec::Water;
+                        } else if next[index.under_right()] == Spec::Empty {
+                            curr[index.index()] = Spec::Empty;
+                            curr[index.under_right()] = Spec::Water;
+                        } else if next[index.left()] == Spec::Empty {
+                            curr[index.index()] = Spec::Empty;
+                            next[index.left()] = Spec::Water;
+                        } else if next[index.right()] == Spec::Empty {
+                            curr[index.index()] = Spec::Empty;
+                            next[index.right()] = Spec::Water;
+                        } else {
+                            curr[index.index()] = Spec::Empty;
+                            next[index.index()] = Spec::Sand;
+                        }
+                    }
                     _ => {}
                 }
             }
@@ -79,27 +101,6 @@ impl World {
 
         mem::swap(curr, next);
     }
-
-    // fn operate() {
-    //     match self.cells[[xi, yi]] {
-    //         Spec::Sand => {
-    //             if self.buffer[[xi, yi - 1]] == Spec::Empty {
-    //                 self.cells[[xi, yi]] = Spec::Empty;
-    //                 self.buffer[[xi, yi - 1]] = Spec::Sand;
-    //             } else if self.buffer[[xi - 1, yi - 1]] == Spec::Empty {
-    //                 self.cells[[xi, yi]] = Spec::Empty;
-    //                 self.buffer[[xi - 1, yi - 1]] = Spec::Sand;
-    //             } else if self.buffer[[xi + 1, yi - 1]] == Spec::Empty {
-    //                 self.cells[[xi, yi]] = Spec::Empty;
-    //                 self.buffer[[xi + 1, yi - 1]] = Spec::Sand;
-    //             } else {
-    //                 self.cells[[xi, yi]] = Spec::Empty;
-    //                 self.buffer[[xi, yi]] = Spec::Sand;
-    //             }
-    //         }
-    //         _ => {}
-    //     }
-    // }
 
     /// Draw the world state to a buffer.
     #[inline]
@@ -114,6 +115,7 @@ impl World {
                     Spec::Wall => WALL,
                     Spec::Empty => EMPTY,
                     Spec::Sand => SAND,
+                    Spec::Water => WATER,
                 }
             }
         }

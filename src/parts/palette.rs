@@ -15,3 +15,6 @@ pub const EMPTY: u32 = components_to_u32(10, 10, 10);
 
 /// Sand colour.
 pub const SAND: u32 = components_to_u32(255, 204, 0);
+
+/// Water colour.
+pub const WATER: u32 = components_to_u32(100, 204, 255);
