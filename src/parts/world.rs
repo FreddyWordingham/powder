@@ -93,7 +93,7 @@ impl World {
         let cells = &mut self.cells;
 
         let index = [x as usize, y as usize];
-        for [dx, dy] in &POWDER[rng.gen_range(0, 2)] {
+        for [dx, dy] in &POWDER[rng.gen_range(0..2)] {
             let other_index = [(x + dx) as usize, (y + dy) as usize];
             let mut other = cells[other_index];
 
@@ -111,7 +111,7 @@ impl World {
         let cells = &mut self.cells;
 
         let index = [x as usize, y as usize];
-        for [dx, dy] in &LIQUID[rng.gen_range(0, 2)] {
+        for [dx, dy] in &LIQUID[rng.gen_range(0..2)] {
             let other_index = [(x + dx) as usize, (y + dy) as usize];
             let mut other = cells[other_index];
 
@@ -129,7 +129,7 @@ impl World {
         let cells = &mut self.cells;
 
         let index = [x as usize, y as usize];
-        for [dx, dy] in &LIQUID[rng.gen_range(0, 2)] {
+        for [dx, dy] in &LIQUID[rng.gen_range(0..2)] {
             let other_index = [(x + dx) as usize, (y + dy) as usize];
             let mut other = cells[other_index];
 
@@ -147,7 +147,7 @@ impl World {
         let cells = &mut self.cells;
 
         let index = [x as usize, y as usize];
-        for [dx, dy] in &GAS[rng.gen_range(0, 8)] {
+        for [dx, dy] in &GAS[rng.gen_range(0..8)] {
             let other_index = [(x + dx) as usize, (y + dy) as usize];
             let mut other = cells[other_index];
 

@@ -2,17 +2,21 @@
 
 use arctk::{
     args,
-    file::Load,
+    fs::{File, Load},
     ord::{X, Y},
+    report,
     util::{
-        banner::{section, title},
-        dir,term
+        banner::{section, sub_section, title},
+        dir, term,
     },
 };
 use arctk_attr::input;
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
 use powder::parts::World;
-use std::{env::current_dir, path::PathBuf};
+use std::{
+    env::current_dir,
+    path::{Path, PathBuf},
+};
 
 /// Backup print width if the terminal width can not be determined.
 const BACKUP_TERM_WIDTH: usize = 80;
@@ -25,45 +29,94 @@ struct Parameters {
 }
 
 fn main() {
-    let term_width = term::width().unwrap_or(BACKUP_TERM_WIDTH);
+    let term_width = term::width(BACKUP_TERM_WIDTH);
     title(term_width, "Powder");
 
+    let (in_dir, out_dir, params_path) = initialisation(term_width);
+    let params = load_parameters(term_width, &in_dir, &params_path);
+
+    // section(term_width, "Input");
+    // sub_section(term_width, "Reconstruction");
+    // let sett = params.sett;
+    // let grid = params.grid;
+    // let multipliers = params.multipliers;
+
+    // section(term_width, "Initialisation");
+    // args!(bin_path: PathBuf;
+    //     params_path: PathBuf
+    // );
+    // let cwd = current_dir().expect("Failed to determine current working directory.");
+    // let (in_dir, _out_dir) = dir::io_dirs(Some(cwd.join("input")), Some(cwd.join("output")))
+    //     // let (in_dir, out_dir) = dir::io_dirs(Some(cwd.clone()), Some(cwd.join("output")))
+    //     .expect("Failed to initialise directories.");
+
+    // section(term_width, "Input");
+    // let params =
+    //     Parameters::load(&in_dir.join(params_path)).expect("Failed to load parameters file.");
+
+    // // Initialisation.
+    // let w = params.res[X];
+    // let h = params.res[Y];
+
+    // // Resources.
+    // let mut buffer: Vec<u32> = vec![0; w * h];
+    // let mut win = make_window(w, h);
+    // let mut rng = rand::thread_rng();
+    // let mut world = World::new(params.res);
+
+    // // Limit to max ~60 fps update rate
+    // // win.limit_update_rate(Some(std::time::Duration::from_micros(10000)));
+
+    // // Main loop.
+    // while win.is_open() && !win.is_key_down(Key::Escape) {
+    //     // for _ in 0..1000 {
+    //     world.tick(&mut rng);
+    //     // }
+    //     world.draw(&mut buffer);
+
+    //     win.update_with_buffer(&buffer, w, h)
+    //         .expect("Failed to render.")
+    // }
+}
+
+/// Initialise the input arguments.
+fn initialisation(term_width: usize) -> (PathBuf, PathBuf, PathBuf) {
     section(term_width, "Initialisation");
-    args!(bin_path: PathBuf;
+    sub_section(term_width, "args");
+    args!(
+        bin_path: PathBuf;
+        input_dir: PathBuf;
+        output_dir: PathBuf;
         params_path: PathBuf
     );
+    report!(bin_path.display(), "binary path");
+    report!(input_dir.display(), "relative input path");
+    report!(output_dir.display(), "relative output path");
+    report!(params_path.display(), "parameters");
+
+    sub_section(term_width, "directories");
     let cwd = current_dir().expect("Failed to determine current working directory.");
-    let (in_dir, _out_dir) = dir::io_dirs(Some(cwd.join("input")), Some(cwd.join("output")))
-        // let (in_dir, out_dir) = dir::io_dirs(Some(cwd.clone()), Some(cwd.join("output")))
+    let (in_dir, out_dir) = dir::io_dirs(Some(cwd.join(input_dir)), Some(cwd.join(output_dir)))
         .expect("Failed to initialise directories.");
+    report!(in_dir.display(), "input directory");
+    report!(out_dir.display(), "output directory");
 
-    section(term_width, "Input");
-    let params =
-        Parameters::load(&in_dir.join(params_path)).expect("Failed to load parameters file.");
+    (in_dir, out_dir, params_path)
+}
 
-    // Initialisation.
-    let w = params.res[X];
-    let h = params.res[Y];
+/// Load the required files and form the input parameters.
+fn load_parameters(term_width: usize, in_dir: &Path, params_path: &Path) -> Parameters {
+    section(term_width, "Parameters");
+    sub_section(term_width, "Loading");
+    let params = Parameters::new_from_file(&in_dir.join(&params_path))
+        .expect("Failed to load parameters file.");
+    // report!(params, "parameters");
 
-    // Resources.
-    let mut buffer: Vec<u32> = vec![0; w * h];
-    let mut win = make_window(w, h);
-    let mut rng = rand::thread_rng();
-    let mut world = World::new(params.res);
+//     // sub_section(term_width, "Building");
+//     // let params = params.build();
+//     // report!(params, "parameters");
 
-    // Limit to max ~60 fps update rate
-    // win.limit_update_rate(Some(std::time::Duration::from_micros(10000)));
-
-    // Main loop.
-    while win.is_open() && !win.is_key_down(Key::Escape) {
-        // for _ in 0..1000 {
-        world.tick(&mut rng);
-        // }
-        world.draw(&mut buffer);
-
-        win.update_with_buffer(&buffer, w, h)
-            .expect("Failed to render.")
-    }
+    params
 }
 
 // Create the main window.
@@ -79,7 +132,7 @@ fn make_window(width: usize, height: usize) -> Window {
         scale_mode: ScaleMode::Center,
         topmost: true,
         transparency: true,
-        none: false
+        none: false,
     };
 
     Window::new("Powder Game III", width, height, window_options).unwrap_or_else(|e| {
