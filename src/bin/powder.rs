@@ -6,7 +6,7 @@ use arctk::{
     ord::{X, Y},
     util::{
         banner::{section, title},
-        dir,
+        dir,term
     },
 };
 use arctk_attr::input;
@@ -14,7 +14,10 @@ use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
 use powder::parts::World;
 use std::{env::current_dir, path::PathBuf};
 
-/// Input parameters.
+/// Backup print width if the terminal width can not be determined.
+const BACKUP_TERM_WIDTH: usize = 80;
+
+/// Input parameter structure.
 #[input]
 struct Parameters {
     /// Simulation resolution.
@@ -22,7 +25,7 @@ struct Parameters {
 }
 
 fn main() {
-    let term_width = arctk::util::term::width().unwrap_or(80);
+    let term_width = term::width().unwrap_or(BACKUP_TERM_WIDTH);
     title(term_width, "Powder");
 
     section(term_width, "Initialisation");
@@ -76,6 +79,7 @@ fn make_window(width: usize, height: usize) -> Window {
         scale_mode: ScaleMode::Center,
         topmost: true,
         transparency: true,
+        none: false
     };
 
     Window::new("Powder Game III", width, height, window_options).unwrap_or_else(|e| {
