@@ -2,7 +2,7 @@
 
 use arctk::{
     args,
-    fs::{File, Load},
+    fs::{File},
     ord::{X, Y},
     report,
     util::{
@@ -24,6 +24,8 @@ const BACKUP_TERM_WIDTH: usize = 80;
 /// Input parameter structure.
 #[input]
 struct Parameters {
+    /// Ticks per update frame.
+    tpf: usize,
     /// Simulation resolution.
     res: [usize; 2],
 }
@@ -32,51 +34,37 @@ fn main() {
     let term_width = term::width(BACKUP_TERM_WIDTH);
     title(term_width, "Powder");
 
-    let (in_dir, out_dir, params_path) = initialisation(term_width);
+    let (in_dir, _out_dir, params_path) = initialisation(term_width);
     let params = load_parameters(term_width, &in_dir, &params_path);
 
-    // section(term_width, "Input");
-    // sub_section(term_width, "Reconstruction");
-    // let sett = params.sett;
-    // let grid = params.grid;
-    // let multipliers = params.multipliers;
+    section(term_width, "Input");
+    sub_section(term_width, "Reconstruction");
+    let res = params.res;
+    let ticks_per_frame  = params.tpf;
 
-    // section(term_width, "Initialisation");
-    // args!(bin_path: PathBuf;
-    //     params_path: PathBuf
-    // );
-    // let cwd = current_dir().expect("Failed to determine current working directory.");
-    // let (in_dir, _out_dir) = dir::io_dirs(Some(cwd.join("input")), Some(cwd.join("output")))
-    //     // let (in_dir, out_dir) = dir::io_dirs(Some(cwd.clone()), Some(cwd.join("output")))
-    //     .expect("Failed to initialise directories.");
+    // Initialisation.
+    let w = res[X];
+    let h = res[Y];
 
-    // section(term_width, "Input");
-    // let params =
-    //     Parameters::load(&in_dir.join(params_path)).expect("Failed to load parameters file.");
-
-    // // Initialisation.
-    // let w = params.res[X];
-    // let h = params.res[Y];
-
-    // // Resources.
-    // let mut buffer: Vec<u32> = vec![0; w * h];
-    // let mut win = make_window(w, h);
-    // let mut rng = rand::thread_rng();
-    // let mut world = World::new(params.res);
+    // Resources.
+    let mut buffer: Vec<u32> = vec![0; w * h];
+    let mut win = make_window(w, h);
+    let mut rng = rand::thread_rng();
+    let mut world = World::new(params.res);
 
     // // Limit to max ~60 fps update rate
     // // win.limit_update_rate(Some(std::time::Duration::from_micros(10000)));
 
-    // // Main loop.
-    // while win.is_open() && !win.is_key_down(Key::Escape) {
-    //     // for _ in 0..1000 {
-    //     world.tick(&mut rng);
-    //     // }
-    //     world.draw(&mut buffer);
+    // Main loop.
+    while win.is_open() && !win.is_key_down(Key::Escape) {
+        for _ in 0..ticks_per_frame {
+        world.tick(&mut rng);
+        }
+        world.draw(&mut buffer);
 
-    //     win.update_with_buffer(&buffer, w, h)
-    //         .expect("Failed to render.")
-    // }
+        win.update_with_buffer(&buffer, w, h)
+            .expect("Failed to render.")
+    }
 }
 
 /// Initialise the input arguments.
