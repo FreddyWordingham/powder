@@ -2,7 +2,7 @@
 
 use arctk::{
     args,
-    fs::{File},
+    fs::File,
     ord::{X, Y},
     report,
     util::{
@@ -40,7 +40,7 @@ fn main() {
     section(term_width, "Input");
     sub_section(term_width, "Reconstruction");
     let res = params.res;
-    let ticks_per_frame  = params.tpf;
+    let ticks_per_frame = params.tpf;
 
     // Initialisation.
     let w = res[X];
@@ -56,9 +56,10 @@ fn main() {
     // // win.limit_update_rate(Some(std::time::Duration::from_micros(10000)));
 
     // Main loop.
+    section(term_width, "Running");
     while win.is_open() && !win.is_key_down(Key::Escape) {
         for _ in 0..ticks_per_frame {
-        world.tick(&mut rng);
+            world.tick(&mut rng);
         }
         world.draw(&mut buffer);
 
@@ -111,7 +112,7 @@ fn make_window(width: usize, height: usize) -> Window {
         borderless: true,
         title: true,
         resize: false,
-        scale: Scale::X4,
+        scale: Scale::X8,
         scale_mode: ScaleMode::Center,
         topmost: true,
         transparency: true,
