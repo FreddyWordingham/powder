@@ -1,5 +1,5 @@
 {
-    res:    [64, 64],
-    tpf:    8,
-    scale:  4
+    res         : [64, 64],
+    tpf         : 8,
+    cell_size   : "X4"
 }

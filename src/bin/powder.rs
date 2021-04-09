@@ -12,7 +12,7 @@ use arctk::{
 };
 use arctk_attr::input;
 use minifb::{Key, Scale, ScaleMode, Window, WindowOptions};
-use powder::parts::World;
+use powder::parts::{CellSize, World};
 use std::{
     env::current_dir,
     path::{Path, PathBuf},
@@ -28,6 +28,8 @@ struct Parameters {
     tpf: usize,
     /// Simulation resolution.
     res: [usize; 2],
+    /// Cell size.
+    cell_size: CellSize,
 }
 
 fn main() {
@@ -41,6 +43,7 @@ fn main() {
     sub_section(term_width, "Reconstruction");
     let res = params.res;
     let ticks_per_frame = params.tpf;
+    let scale = params.cell_size.scale();
 
     // Initialisation.
     let w = res[X];
@@ -48,7 +51,7 @@ fn main() {
 
     // Resources.
     let mut buffer: Vec<u32> = vec![0; w * h];
-    let mut win = make_window(w, h);
+    let mut win = make_window(w, h, scale);
     let mut rng = rand::thread_rng();
     let mut world = World::new(params.res);
 
@@ -97,14 +100,11 @@ fn initialisation(term_width: usize) -> (PathBuf, PathBuf, PathBuf) {
 fn load_parameters(term_width: usize, in_dir: &Path, params_path: &Path) -> Parameters {
     section(term_width, "Parameters");
     sub_section(term_width, "Loading");
-    let params = Parameters::new_from_file(&in_dir.join(&params_path))
-        .expect("Failed to load parameters file.");
-
-    params
+    Parameters::new_from_file(&in_dir.join(&params_path)).expect("Failed to load parameters file.")
 }
 
 // Create the main window.
-fn make_window(width: usize, height: usize) -> Window {
+fn make_window(width: usize, height: usize, scale: Scale) -> Window {
     debug_assert!(width > 0);
     debug_assert!(height > 0);
 
@@ -112,7 +112,7 @@ fn make_window(width: usize, height: usize) -> Window {
         borderless: true,
         title: true,
         resize: false,
-        scale: Scale::X8,
+        scale,
         scale_mode: ScaleMode::Center,
         topmost: true,
         transparency: true,

@@ -1,10 +1,10 @@
 //! Game parts.
 
+pub mod cell_size;
 pub mod direction;
-pub mod order;
 pub mod palette;
 pub mod spec;
 pub mod stencil;
 pub mod world;
 
-pub use self::{direction::*, order::*, palette::*, spec::*, stencil::*, world::*};
+pub use self::{cell_size::*, direction::*, palette::*, spec::*, stencil::*, world::*};
