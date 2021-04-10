@@ -10,13 +10,13 @@ pub enum Spec {
 }
 
 impl Spec {
-    // /// Evolve the particle forward a single tick.
-    // #[inline]
-    // pub fn tick(&mut self) {
-    //     match *self {
-    //         _ => {}
-    //     }
-    // }
+    /// Evolve the particle forward a single tick.
+    #[inline]
+    pub fn evolve(&mut self) {
+        match self {
+            _ => {}
+        }
+    }
 }
 
 impl Default for Spec {

@@ -13,6 +13,9 @@ pub const WALL: u32 = components_to_u32(50, 50, 50);
 /// Empty void colour.
 pub const EMPTY: u32 = components_to_u32(10, 10, 10);
 
+/// Alive colour.
+pub const ALIVE: u32 = components_to_u32(255, 255, 255);
+
 /// Sand colour.
 pub const SAND: u32 = components_to_u32(255, 204, 0);
 

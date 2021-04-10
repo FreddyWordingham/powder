@@ -21,15 +21,28 @@ impl World {
         debug_assert!(res[X] > 0);
         debug_assert!(res[Y] > 0);
 
-        Self {
-            res,
-            cells: Array2::default(res),
+        let mut cells = Array2::default(res);
+        for xi in 0..res[X] {
+            cells[[xi, 0]] = Spec::Wall;
+            cells[[xi, res[Y] - 1]] = Spec::Wall;
         }
+        for yi in 0..res[Y] {
+            cells[[0, yi]] = Spec::Wall;
+            cells[[res[X] - 1, yi]] = Spec::Wall;
+        }
+
+        Self { res, cells }
     }
 
     /// Tick forward one instance.
     #[inline]
-    pub fn tick(&mut self, mut _rng: &mut ThreadRng) {}
+    pub fn tick(&mut self, mut _rng: &mut ThreadRng) {
+        for xi in 2..(self.res[X] - 2) {
+            for yi in 2..(self.res[Y] - 2) {
+                self.cells[[xi, yi]].evolve();
+            }
+        }
+    }
 
     /// Draw the world state to a buffer.
     #[inline]
