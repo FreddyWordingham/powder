@@ -1,9 +1,13 @@
 //! Simulation data.
 
-use crate::parts::{palette::*, Spec};
-use arctk::ord::{X, Y};
+use crate::parts::{palette::*, spec::Spec, Particle};
+use arctk::{
+    math::{Pos2, Vec2},
+    ord::{X, Y},
+};
 use ndarray::Array2;
 use rand::rngs::ThreadRng;
+use std::f64::consts::PI;
 
 /// Simulation data.
 pub struct World {
@@ -11,6 +15,8 @@ pub struct World {
     res: [usize; 2],
     /// Cell data.
     cells: Array2<Spec>,
+    /// Particle data.
+    parts: Vec<Particle>,
 }
 
 impl World {
@@ -31,16 +37,47 @@ impl World {
             cells[[res[X] - 1, yi]] = Spec::Wall;
         }
 
-        Self { res, cells }
+        let num_parts = 100;
+        let mut parts = Vec::with_capacity(num_parts);
+        for n in 0..num_parts {
+            let theta = n as f64 * ((2.0 * PI) / num_parts as f64);
+            let rho = 0.15;
+            parts.push(Particle::new(
+                Pos2::new(res[X] as f64 / 2.0, res[Y] as f64 / 2.0),
+                Vec2::new(theta.sin() * rho, theta.cos() * rho),
+            ));
+        }
+
+        Self { res, cells, parts }
     }
 
     /// Tick forward one instance.
     #[inline]
     pub fn tick(&mut self, mut _rng: &mut ThreadRng) {
+        // Cells.
         for xi in 2..(self.res[X] - 2) {
             for yi in 2..(self.res[Y] - 2) {
-                self.cells[[xi, yi]].evolve();
+                let neighbours = [
+                    self.cells[[xi - 1, yi]],
+                    self.cells[[xi + 1, yi]],
+                    self.cells[[xi, yi - 1]],
+                    self.cells[[xi, yi + 1]],
+                ];
+                self.cells[[xi, yi]] = self.cells[[xi, yi]].evolve(&neighbours);
             }
+        }
+
+        // Particles.
+        for part in &mut self.parts {
+            let xi = part.pos.x as usize;
+            let yi = part.pos.y as usize;
+            let neighbours = [
+                self.cells[[xi - 1, yi]],
+                self.cells[[xi + 1, yi]],
+                self.cells[[xi, yi - 1]],
+                self.cells[[xi, yi + 1]],
+            ];
+            part.evolve(&neighbours);
         }
     }
 
@@ -56,8 +93,18 @@ impl World {
                 buffer[length - index] = match self.cells[[xi, yi]] {
                     Spec::Empty => EMPTY,
                     Spec::Wall => WALL,
+                    Spec::Firework(n) => {
+                        println!("fire {}", n);
+                        FIRE
+                    }
                 }
             }
+        }
+
+        for part in &self.parts {
+            let offset = part.pos.y as usize * self.res[X];
+            let index = offset + self.res[X] - part.pos.x as usize;
+            buffer[length - index] = WATER;
         }
     }
 }

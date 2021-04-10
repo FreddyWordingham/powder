@@ -7,14 +7,25 @@ pub enum Spec {
     Empty,
     /// Wall.
     Wall,
+    /// Firework (lifetime).
+    Firework(i32),
 }
 
 impl Spec {
     /// Evolve the particle forward a single tick.
+    #[must_use]
     #[inline]
-    pub fn evolve(&mut self) {
+    pub const fn evolve(self, _neighbours: &[Self; 4]) -> Self {
         match self {
-            _ => {}
+            Self::Firework(fuel) => {
+                if fuel > 0 {
+                    Self::Firework(fuel - 1)
+                } else {
+                    Self::Empty
+                }
+            }
+            Self::Wall => Self::Wall,
+            Self::Empty => Self::Empty,
         }
     }
 }

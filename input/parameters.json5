@@ -1,5 +1,5 @@
 {
     res         : [64, 64],
-    tpf         : 8,
+    tpf         : 1,
     cell_size   : "X16"
 }
