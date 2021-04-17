@@ -26,6 +26,8 @@ const BACKUP_TERM_WIDTH: usize = 80;
 struct Parameters {
     /// Ticks per update frame.
     tpf: usize,
+    /// Frames per second.
+    fps: u64,
     /// Simulation resolution.
     res: [usize; 2],
     /// Cell size.
@@ -41,8 +43,9 @@ fn main() {
 
     section(term_width, "Input");
     sub_section(term_width, "Reconstruction");
-    let res = params.res;
     let ticks_per_frame = params.tpf;
+    let fps = params.fps;
+    let res = params.res;
     let scale = params.cell_size.scale();
 
     // Initialisation.
@@ -55,8 +58,8 @@ fn main() {
     let mut rng = rand::thread_rng();
     let mut world = World::new(params.res);
 
-    // // Limit to max ~60 fps update rate
-    // // win.limit_update_rate(Some(std::time::Duration::from_micros(10000)));
+    // Limit to max ~60 fps update rate
+    win.limit_update_rate(Some(std::time::Duration::from_micros(1000000 / fps)));
 
     // Main loop.
     section(term_width, "Running");

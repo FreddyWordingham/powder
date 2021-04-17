@@ -1,5 +1,6 @@
 {
-    res         : [64, 64],
+    res         : [200, 200],
     tpf         : 1,
-    cell_size   : "X16"
+    fps         : 1,
+    cell_size   : "X4"
 }

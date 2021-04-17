@@ -36,12 +36,13 @@ impl World {
             cells[[0, yi]] = Spec::Wall;
             cells[[res[X] - 1, yi]] = Spec::Wall;
         }
+        cells[[res[X] / 2, res[Y] / 2]] = Spec::Firework(20);
 
-        let num_parts = 1000;
+        let num_parts = 0;
         let mut parts = Vec::with_capacity(num_parts);
         for n in 0..num_parts {
             let theta = n as f64 * ((2.0 * PI) / num_parts as f64);
-            let rho = 1.0e-4;
+            let rho = 1.0e-3;
             parts.push(Particle::new(
                 Pos2::new(res[X] as f64 / 2.0, res[Y] as f64 / 2.0),
                 Vec2::new(theta.sin() * rho * n as f64, theta.cos() * rho * n as f64),
